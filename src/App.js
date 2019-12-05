@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react' 
 // import {BrowserRouter} from 'react-router-dom'
 import BaseLayout from './components/layout'
 import routers from './routers/routers'
@@ -13,5 +13,5 @@ const App = () => (
     {routers}
   </BaseLayout>
 )
-
+ 
 export default App;

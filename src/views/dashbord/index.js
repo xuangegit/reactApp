@@ -1,5 +1,5 @@
-import React from 'react'
-export default class Dashbord extends React.Component{
+import React,{Component} from 'react'
+export default class Dashbord extends Component{
   render(){
     return(
       <div>
