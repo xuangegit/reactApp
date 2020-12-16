@@ -1,8 +1,8 @@
 import React from 'react'
-import { Layout} from 'antd';
+import { Layout,Icon} from 'antd';
 import Menu from './menu'
 import './index.css'
-
+// import WithCopyRight from  '../HOC/WithCopyRight'
 const { Header, Sider, Content } = Layout;
 
 class SiderDemo extends React.Component {
@@ -19,26 +19,28 @@ class SiderDemo extends React.Component {
   };
 
   render() {
+    console.log('children',this.props.children)
     return (
       <Layout className="layout">
         <Sider breakpoint="xl"
-      collapsedWidth="80"
-      onBreakpoint={broken => {
-        console.log(broken);
-      }}
-      onCollapse={(collapsed, type) => {
-        console.log(collapsed, type);
-      }}>
+            trigger={null} collapsible collapsed={this.state.collapsed}
+          collapsedWidth="80"
+          onBreakpoint={broken => {
+            console.log(broken);
+          }}
+          onCollapse={(collapsed, type) => {
+            console.log(collapsed, type);
+          }}>
           <div className="logo" />
           <Menu/>
         </Sider>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
-            {/* <Icon
+            <Icon
               className="trigger"
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
               onClick={this.toggle}
-            /> */}
+            />
           </Header>
           <Content
             style={{
@@ -49,6 +51,7 @@ class SiderDemo extends React.Component {
             }}
           >
             {this.props.children}
+            
           </Content>
         </Layout>
       </Layout>
