@@ -24,13 +24,13 @@ class SiderDemo extends React.Component {
       <Layout className="layout">
         <Sider breakpoint="xl"
             trigger={null} collapsible collapsed={this.state.collapsed}
-          collapsedWidth="80"
-          onBreakpoint={broken => {
-            console.log(broken);
-          }}
+            collapsedWidth="80"
+            onBreakpoint={broken => {
+              console.log(broken);
+            }}
           onCollapse={(collapsed, type) => {
             console.log(collapsed, type);
-          }}>
+        }}>
           <div className="logo" />
           <Menu/>
         </Sider>

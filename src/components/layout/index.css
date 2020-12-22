@@ -18,3 +18,7 @@
 .layout{
   height:100vh
 }
+.trigger {
+  font-size:20px;
+  margin: 0 15px
+}

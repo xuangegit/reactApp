@@ -1,5 +1,6 @@
 import React from 'react'
 import home from "../views/home"
+import Main from '../views/main'
 import dashbord from '../views/dashbord'
 import {Route} from 'react-router-dom'
 const routers=[
@@ -10,7 +11,7 @@ const routers=[
   },
   {
     path: '/home',
-    component: home,
+    component:Main ,
     exact: true,
   },
   {
