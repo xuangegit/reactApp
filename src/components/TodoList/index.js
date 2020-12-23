@@ -1,5 +1,5 @@
 import  React,{createRef} from "react"
-import {Input,Button,Icon,Checkbox} from 'antd'
+import {Input,Button,Checkbox} from 'antd'
 import PropTypes from 'prop-types'
 
 export default class TodoList extends React.Component{
@@ -92,7 +92,7 @@ export default class TodoList extends React.Component{
     return(
       <div>
         <Input.Group compact>
-          <Input  prefix={<Icon type="message"/>} placeholder="请输入" 
+          <Input  placeholder="请输入" 
             ref={this.inputRef}
             value={this.state.input} onChange={this.inputChange} style={{width:"30%"}}
             onPressEnter={this.enterHandle.bind(this)}

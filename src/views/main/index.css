@@ -1,0 +1,15 @@
+.newline-hidden{
+  max-width:400px;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.topWrapper{
+  display: flex;
+  justify-content: space-between;
+}
+.common-button{
+  margin: 0 10px
+}

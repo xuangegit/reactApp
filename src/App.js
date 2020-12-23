@@ -10,7 +10,7 @@ import './App.css';
 
 const App = () => (
   <BaseLayout>
-    {routers}
+    <div className="content">{routers}</div>
   </BaseLayout>
 )
  

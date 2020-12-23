@@ -1,60 +1,115 @@
-import { Table, Button,Popover } from 'antd';
+import { Table, Button,Popover,Input,Form,Modal,Select } from 'antd';
 import React from 'react'
-
-const myStyle = {
-    width: '100px',
-    display: '-webkitBox',
-    webkitLineClamp: 2,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    webkitBoxOrient: 'vertical'
-  }
-  const style1 = {
-    width: '100px',
-    overflow: 'hidden',
-    textOverflow:'ellipsis',
-    whiteSpace: 'nowrap'
-  }
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    render:(address)=> (<Popover content={address} title="address" trigger="hover">
-      <div style={style1}>{address}</div>
-  </Popover>)
-  },
-];
+import { PlusOutlined ,SearchOutlined } from '@ant-design/icons';
+import './index.css'
+// import AddUpdateDialog from './components/addUpdateDialog'
 
 const data = [];
 for (let i = 0; i < 46; i++) {
   data.push({
     key: i,
-    name: `Edward King ${i}`,
-    age: 32,
+    index: i+1,
+    jobName: `Edward King ${i}`,
+    jobType: 32,
+    salary: 20,
+    workplace: '上海',
+    educationalRequirements: '本科及以上',
+    responsibility: `1、 负责法律文件的审核、起草工作；
+    2、 负责相关协议、合同等的核对、用印、归档及管理工作；
+    3、 协助处理公司各类法律事务、法律风险规避等工作；
+    4、 协助配合初步的法律研究；
+    5、 完成领导安排的其他工作任务。`,
     address: `fdsdasf fafgsgfsgsgs
     gsfgsfg
     gsfgsg
     gsfgsdfgsdfgsgjesrjfldsfjls
     gsfgsgsdfgsdfgjpoewirafladfladjfadsjfl
     faffadfasdfasjkflnnadfadafasf
-     f sfa af afa fasdf sf asfasfasfda sfLondon, Park Lane no. ${i}`,
+     f sfa af afa fasdf sf asfasfasfda sfLondon, Park Lane no. ${i}` ,
+     status:(i%2)===0
   });
 }
 
 export default class Main extends React.Component {
-  state = {
-    selectedRowKeys: [], // Check here to configure the default column
-    loading: false,
-  };
-
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      layout:{
+        labelCol: { span: 6 },
+        wrapperCol: { span: 18 },
+      },
+      selectedRowKeys: [], // Check here to configure the default column
+      loading: false,
+      visible: false,
+      confirmLoading:false,
+      title: '添加岗位',
+      columns: [
+        {
+          title: '序号',
+          dataIndex: 'index',
+        },
+        {
+          title: '岗位名称',
+          dataIndex: 'jobName',
+        },
+        {
+          title: '岗位类型',
+          dataIndex: 'jobType',
+        },
+        {
+          title: '工作地点',
+          dataIndex: 'workplace',
+        },
+        {
+          title: '学历要求',
+          dataIndex: 'educationalRequirements ',
+        },
+        {
+          title: '薪资',
+          dataIndex: 'salary'
+        },
+        {
+          title: '工作经验',
+          dataIndex: 'workExperience'
+        },
+        {
+          title: '岗位职责',
+          dataIndex: 'responsibility',
+          render:(responsibility)=> (<Popover content={<p style={{width:'500px'}}>{responsibility}</p>} title="岗位职责" trigger="hover" style={{width: '200px',height:'auto'}}>
+              <div  className="newline-hidden">{responsibility}</div>
+          </Popover>)
+        },
+        {
+          title: '岗位要求',
+          dataIndex: 'address',
+          render:(address)=> (<Popover content={<p style={{width:'500px'}}>{address}</p>} title="address" trigger="hover" style={{width: '200px',height:'auto'}}>
+              <div  className="newline-hidden">{address}</div>
+          </Popover>)
+        },
+        {
+          title: '状态',
+          dataIndex: 'status',
+          render:(status)=>(
+            <p style={{width: '100px'}}>{status?'发布': '未发布'}</p>
+          )
+        },
+        {
+          title: '操作',
+          key: 'action',
+          render: (text, record) => (
+            <div>
+              <Button size="small">编辑</Button>
+              <Button size="small" style={{marginTop: '5px'}} type="danger">删除</Button>
+            </div>
+          ),
+        },
+      ],
+    };
+   
+  }
+  formRef = React.createRef();
+  
   start = () => {
     this.setState({ loading: true });
     // ajax request after empty completing
@@ -70,26 +125,173 @@ export default class Main extends React.Component {
     console.log('selectedRowKeys changed: ', selectedRowKeys);
     this.setState({ selectedRowKeys });
   };
+  addHandle = ()=>{
+    // alert(1)
+    this.setState({
+      visible:true,
+      title: '添加岗位'
+    },()=>{
+      console.log('visible',this.state.visible)
+    })
+    
+  }
+  showModal = () => {
+    this.setState({visible:true})
+  };
+  setFields = ()=>{
+    console.log('ref', this.formRef.current)
+    // this.formRef.current.validateFields()
+    this.formRef.current.setFieldsValue({
+      jobName: 'web工程师!',
+    })
+  }
+  handleOk = () => {
+    this.setState({confirmLoading:true})
+    setTimeout(() => {
+      this.setState({visible:false})
+      this.setState({confirmLoading:false})
+    }, 2000);
+  };
+
+  handleCancel = () => {
+    console.log('Clicked cancel button');
+    this.setState({visible:false})
+  };
+
 
   render() {
-    const { loading, selectedRowKeys } = this.state;
+    const { loading, selectedRowKeys ,columns,confirmLoading,layout,visible,title} = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
     const hasSelected = selectedRowKeys.length > 0;
     return (
-      <div>
-        <div style={{ marginBottom: 16 }}>
-          <Button type="primary" onClick={this.start} disabled={!hasSelected} loading={loading}>
-            Reload
-          </Button>
-          <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-          </span>
+      <>
+        <div className="topWrapper">
+            <div>
+              <Button type="primary" onClick={this.start} disabled={!hasSelected} loading={loading}>
+                Reload
+              </Button>
+              <Button type="primary">
+               <span>搜索<SearchOutlined /></span>
+              </Button>
+              <span style={{ marginLeft: 8 }}>
+                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+              </span>
+            </div>  
+            <div>
+              <Button type="primary" className="common-button">部分发布</Button>
+              <Button type="primary" className="common-button">一键发布</Button>
+              <Button type="primary"  className="common-button" onClick={this.addHandle}>< PlusOutlined />添加</Button>
+              <div>{visible?1:0}</div>
+            </div>
         </div>
         <Table rowSelection={rowSelection} columns={columns} dataSource={data} />
-      </div>
+        <Modal
+          title={title}
+          visible={visible}
+          onOk={this.handleOk}
+          confirmLoading={confirmLoading}
+          onCancel={this.handleCancel}
+        >
+          <Form
+            {...layout}
+            name="basic"
+            ref={this.formRef}
+            // initialValues={{ remember: true }}
+            // onFinish={onFinish}
+            // onFinishFailed={onFinishFailed}
+          >
+            <Form.Item
+              label="岗位名称"
+              name="jobName"
+              rules={[{ required: true, message: '请输入岗位名称' }]}
+            >
+              <Input allowClear/>
+            </Form.Item>
+
+            <Form.Item
+              label="岗位类型"
+              name="jobType"
+              rules={[{ required: true, message: '请选择岗位类型' }]}
+            >
+              <Select allowClear>
+                <Select.Option value="社会招聘">社会招聘</Select.Option>
+                <Select.Option value="校园招聘">校园招聘</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="工作地点"
+              name="workSpace"
+              rules={[{ required: true, message: '请选择工作地点' }]}
+            >
+              <Select allowClear>
+                <Select.Option value="上海市">上海市</Select.Option>
+                <Select.Option value="宁波市">宁波市</Select.Option>
+                <Select.Option value="杭州市">杭州市</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="工作经验"
+              name="workExperience"
+              rules={[{ required: true, message: '请选择工作经验' }]}
+            >
+              <Select allowClear>
+                <Select.Option value="1">1年工作经验</Select.Option>
+                <Select.Option value="2">2年工作经验</Select.Option>
+                <Select.Option value="3">3年工作经验</Select.Option>
+                <Select.Option value="4">4年工作经验</Select.Option>
+                <Select.Option value="5">5年工作经验</Select.Option>
+                <Select.Option value="6">6年工作经验</Select.Option>
+                <Select.Option value="7">7年工作经验</Select.Option>
+                <Select.Option value="8">8年工作经验</Select.Option>
+                <Select.Option value="9">9年工作经验</Select.Option>
+                <Select.Option value="10">10年工作经验</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="学历要求"
+              name="education"
+              rules={[{ required: true, message: '请选择学历要求' }]}
+            >
+              <Select allowClear>
+                <Select.Option value="博士">博士</Select.Option>
+                <Select.Option value="硕士">硕士</Select.Option>
+                <Select.Option value="本科">本科</Select.Option>
+                <Select.Option value="大专">大专</Select.Option>
+                <Select.Option value="高中">高中</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="薪资范围"
+              name="salary"
+              rules={[{ required: true, message: '请输入薪资范围' }]}
+            >
+              <Input allowClear/>
+            </Form.Item>
+            <Form.Item
+              label="岗位职责"
+              name="workSpace"
+              rules={[{ required: true, message: '请输入岗位职责' }]}
+            >
+              <Input.TextArea allowClear autoSize={{ minRows: 2, maxRows: 6}}/>
+              
+            </Form.Item>
+            <Form.Item
+              label="岗位要求"
+              name="responsibility"
+              rules={[{ required: true, message: '请输入岗位要求' }]}
+            >
+              <Input.TextArea allowClear autoSize={{ minRows: 2, maxRows: 6}}/>
+              
+            </Form.Item>
+            
+            <Button onClick={this.setFields}>设置</Button>
+          </Form>
+        </Modal>
+        {/* <AddUpdateDialog visible={this.state.visible}></AddUpdateDialog> */}
+      </>
     );
   }
 }

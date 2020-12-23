@@ -1,18 +1,19 @@
 import React, { Component } from 'react'
 import {NavLink} from 'react-router-dom'
-import {Icon,Menu} from 'antd'
+import {Menu} from 'antd'
+import {UserOutlined} from '@ant-design/icons'
 
 export default class menu extends Component{
   render(){
     return (
       <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
             <Menu.Item key="1">
-              <Icon type="user" />
+              <UserOutlined />
               <span>首页</span>
               <NavLink to='/home'></NavLink>
             </Menu.Item>
             <Menu.Item key="2">
-              <Icon type="video-camera" />
+              <UserOutlined />
               <span>dashbord</span>
               <NavLink to='/dashbord'></NavLink>
             </Menu.Item>
@@ -20,7 +21,7 @@ export default class menu extends Component{
               key="sub1"
               title={
                 <span>
-                  <Icon type="setting" />
+                  <UserOutlined />
                   <span>
                     nav
                     <NavLink to="/home"></NavLink>
@@ -29,7 +30,7 @@ export default class menu extends Component{
               }
             >
               <Menu.Item key="6">
-                <Icon type="video-camera" />
+                <UserOutlined />
                 <span>sub1</span>
                 <NavLink to="/dashbord"></NavLink>
               </Menu.Item>

@@ -1,7 +1,8 @@
 import React from 'react'
-import { Layout,Icon} from 'antd';
+import { Layout} from 'antd';
 import Menu from './menu'
 import './index.css'
+// import {Icon} from '@ant-design/icons'
 // import WithCopyRight from  '../HOC/WithCopyRight'
 const { Header, Sider, Content } = Layout;
 
@@ -36,13 +37,14 @@ class SiderDemo extends React.Component {
         </Sider>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
-            <Icon
+            {/* <Icon
               className="trigger"
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
               onClick={this.toggle}
-            />
+            /> */}
           </Header>
           <Content
+            className="app-content"
             style={{
               margin: '24px 16px',
               padding: 24,
