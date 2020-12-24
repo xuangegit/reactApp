@@ -1,4 +1,4 @@
-import { Table, Button,Popover,Input,Form,Modal,Select } from 'antd';
+import { Table, Button,Popover,Input,Form,Modal,Select ,Space,Popconfirm, message} from 'antd';
 import React from 'react'
 import { PlusOutlined ,SearchOutlined } from '@ant-design/icons';
 import './index.css'
@@ -11,9 +11,9 @@ for (let i = 0; i < 46; i++) {
     index: i+1,
     jobName: `Edward King ${i}`,
     jobType: 32,
-    salary: 20,
+    salary: '7-15K',
     workplace: '上海',
-    educationalRequirements: '本科及以上',
+    education: '本科及以上',
     responsibility: `1、 负责法律文件的审核、起草工作；
     2、 负责相关协议、合同等的核对、用印、归档及管理工作；
     3、 协助处理公司各类法律事务、法律风险规避等工作；
@@ -34,6 +34,7 @@ export default class Main extends React.Component {
   
   constructor(props) {
     super(props);
+    this.formRef = React.createRef();
     this.state = {
       layout:{
         labelCol: { span: 6 },
@@ -44,72 +45,142 @@ export default class Main extends React.Component {
       visible: false,
       confirmLoading:false,
       title: '添加岗位',
+      pagination: {
+        pageSizeOptions: [10,20,50,100],
+        // total:data.length,
+        // showSizeChanger: true
+        showTotal:(total)=>`共${total}条`,
+        onChange:(page, pageSize)=>{
+          console.log(page,pageSize)
+        },
+        onShowSizeChange:(current,pageSize)=>{
+
+        }
+      },
       columns: [
         {
           title: '序号',
           dataIndex: 'index',
+          width: 64
         },
         {
           title: '岗位名称',
           dataIndex: 'jobName',
+          width: 160
         },
         {
           title: '岗位类型',
           dataIndex: 'jobType',
+          width: 100,
         },
         {
           title: '工作地点',
           dataIndex: 'workplace',
+          width:100
         },
         {
           title: '学历要求',
-          dataIndex: 'educationalRequirements ',
+          dataIndex: 'education ',
+          width:100
         },
         {
           title: '薪资',
-          dataIndex: 'salary'
+          dataIndex: 'salary',
+          width: 100,
         },
         {
           title: '工作经验',
+          width:150,
           dataIndex: 'workExperience'
         },
         {
           title: '岗位职责',
           dataIndex: 'responsibility',
-          render:(responsibility)=> (<Popover content={<p style={{width:'500px'}}>{responsibility}</p>} title="岗位职责" trigger="hover" style={{width: '200px',height:'auto'}}>
+          width: 200,
+          render:(responsibility)=> (<Popover content={<p style={{width:'500px'}}>{responsibility}</p>} title="岗位职责" trigger="hover" >
               <div  className="newline-hidden">{responsibility}</div>
           </Popover>)
         },
         {
           title: '岗位要求',
           dataIndex: 'address',
-          render:(address)=> (<Popover content={<p style={{width:'500px'}}>{address}</p>} title="address" trigger="hover" style={{width: '200px',height:'auto'}}>
+          width:200,
+          render:(address)=> (<Popover content={<p style={{width:'500px'}}>{address}</p>} title="address" trigger="hover" >
               <div  className="newline-hidden">{address}</div>
           </Popover>)
         },
         {
           title: '状态',
           dataIndex: 'status',
+          width: 100,
           render:(status)=>(
-            <p style={{width: '100px'}}>{status?'发布': '未发布'}</p>
+            <p>{status?'已发布': '未发布'}</p>
           )
         },
         {
           title: '操作',
           key: 'action',
-          render: (text, record) => (
-            <div>
-              <Button size="small">编辑</Button>
-              <Button size="small" style={{marginTop: '5px'}} type="danger">删除</Button>
-            </div>
-          ),
+          fixed: 'right',
+          width: 200,
+          render: (text, record) => {
+            return <Space>
+                  <Button size="small" onClick={this.editHandle.bind(this,record)}>编辑</Button>
+                  <Popconfirm
+                    placement="topLeft"
+                    title="确认撤销本条岗位发布?"
+                    onConfirm={this.confirmDelete.bind(this,record)}
+                    onCancel={this.cancelDelete.bind(this,record)}
+                    okText="确认"
+                    cancelText="取消"
+                  >
+                    {record.status&&<Button size="small" type="primary" danger>撤销发布</Button>}
+                  </Popconfirm>
+                  <Popconfirm
+                    placement="topLeft"
+                    title="确认删除本条岗位?"
+                    onConfirm={this.confirmDelete.bind(this,record)}
+                    onCancel={this.cancelDelete.bind(this,record)}
+                    okText="确认"
+                    cancelText="取消"
+                  >
+                    <Button size="small" type="primary" danger>删除</Button>
+                  </Popconfirm>
+                </Space>
+          }
+            
+          ,
         },
       ],
     };
-   
+    
   }
-  formRef = React.createRef();
   
+   editHandle = (record)=>{
+    console.log('this',this)
+    console.log('row',record)
+    this.setState({
+      title: '编辑岗位',
+      visible : true
+    },()=>{
+      
+      console.log('this',this)
+     
+      setTimeout(()=>{
+        this.formRef.current.setFieldsValue(record)
+      },200)
+     
+    })
+    
+    // const promise1 = new Promise((resolve, reject)=> 
+    //   this.setState({title: '编辑岗位',visible : true}, resolve)
+    // )
+    // promise1.then(()=>{
+    //   console.log('this',this)
+    //   setTimeout(()=>{
+    //     this.formRef.current.setFieldsValue(record)
+    //   },100)
+    // })
+  }
   start = () => {
     this.setState({ loading: true });
     // ajax request after empty completing
@@ -120,7 +191,14 @@ export default class Main extends React.Component {
       });
     }, 1000);
   };
-
+  confirmDelete = (record)=>{
+    message.success('已经删除');
+    console.log('行数据--row',record)
+  }
+  cancelDelete = (record)=>{
+    console.log('行数据--row',record)
+    message.success('已取消删除');
+  }
   onSelectChange = selectedRowKeys => {
     console.log('selectedRowKeys changed: ', selectedRowKeys);
     this.setState({ selectedRowKeys });
@@ -138,13 +216,6 @@ export default class Main extends React.Component {
   showModal = () => {
     this.setState({visible:true})
   };
-  setFields = ()=>{
-    console.log('ref', this.formRef.current)
-    // this.formRef.current.validateFields()
-    this.formRef.current.setFieldsValue({
-      jobName: 'web工程师!',
-    })
-  }
   handleOk = () => {
     this.setState({confirmLoading:true})
     setTimeout(() => {
@@ -160,7 +231,7 @@ export default class Main extends React.Component {
 
 
   render() {
-    const { loading, selectedRowKeys ,columns,confirmLoading,layout,visible,title} = this.state;
+    const { loading, selectedRowKeys ,columns,confirmLoading,layout,visible,title,pagination} = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -173,6 +244,10 @@ export default class Main extends React.Component {
               <Button type="primary" onClick={this.start} disabled={!hasSelected} loading={loading}>
                 Reload
               </Button>
+              <Select defaultValue={1} style={{ width: 160,marginRight:20 }}>
+                <Select.Option value={1}>已发布</Select.Option>
+                <Select.Option value={0}>未发布</Select.Option>
+              </Select>
               <Button type="primary">
                <span>搜索<SearchOutlined /></span>
               </Button>
@@ -184,14 +259,18 @@ export default class Main extends React.Component {
               <Button type="primary" className="common-button">部分发布</Button>
               <Button type="primary" className="common-button">一键发布</Button>
               <Button type="primary"  className="common-button" onClick={this.addHandle}>< PlusOutlined />添加</Button>
-              <div>{visible?1:0}</div>
             </div>
         </div>
-        <Table rowSelection={rowSelection} columns={columns} dataSource={data} />
+        <Table rowSelection={rowSelection} columns={columns} pagination={pagination} dataSource={data} scroll={{ x: 1200 }}/>
         <Modal
+          destroyOnClose
+          centered
+          maskClosable={false}
           title={title}
           visible={visible}
           onOk={this.handleOk}
+          okText="确认"
+          cancelText="取消"
           confirmLoading={confirmLoading}
           onCancel={this.handleCancel}
         >
@@ -223,7 +302,7 @@ export default class Main extends React.Component {
             </Form.Item>
             <Form.Item
               label="工作地点"
-              name="workSpace"
+              name="workplace"
               rules={[{ required: true, message: '请选择工作地点' }]}
             >
               <Select allowClear>
@@ -272,22 +351,20 @@ export default class Main extends React.Component {
             </Form.Item>
             <Form.Item
               label="岗位职责"
-              name="workSpace"
+              name="responsibility"
               rules={[{ required: true, message: '请输入岗位职责' }]}
             >
-              <Input.TextArea allowClear autoSize={{ minRows: 2, maxRows: 6}}/>
+              <Input.TextArea allowClear autoSize={{minRows:3}} />
               
             </Form.Item>
             <Form.Item
               label="岗位要求"
-              name="responsibility"
+              name="address"
               rules={[{ required: true, message: '请输入岗位要求' }]}
             >
-              <Input.TextArea allowClear autoSize={{ minRows: 2, maxRows: 6}}/>
+              <Input.TextArea autoSize={{minRows:3}} allowClear/>
               
             </Form.Item>
-            
-            <Button onClick={this.setFields}>设置</Button>
           </Form>
         </Modal>
         {/* <AddUpdateDialog visible={this.state.visible}></AddUpdateDialog> */}

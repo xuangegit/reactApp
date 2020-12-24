@@ -1,0 +1,15 @@
+#tsparticles {
+  height:100vh
+}
+.loginContainer{
+  padding: 20px;
+  background:#10274C;
+  position: absolute;
+  bottom:20%;
+  left:60%;
+  opacity: 0.8;
+  border:1px solid #2890FA
+}
+.ant-form-item-label > label{
+  color:white!important
+}

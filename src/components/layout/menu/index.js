@@ -9,8 +9,8 @@ export default class menu extends Component{
       <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
             <Menu.Item key="1">
               <UserOutlined />
-              <span>首页</span>
-              <NavLink to='/home'></NavLink>
+              <span>职位列表</span>
+              <NavLink to='/jobManager'></NavLink>
             </Menu.Item>
             <Menu.Item key="2">
               <UserOutlined />
@@ -32,7 +32,7 @@ export default class menu extends Component{
               <Menu.Item key="6">
                 <UserOutlined />
                 <span>sub1</span>
-                <NavLink to="/dashbord"></NavLink>
+                <NavLink to="/home"></NavLink>
               </Menu.Item>
             </Menu.SubMenu>   
       </Menu>

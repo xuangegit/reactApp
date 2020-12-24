@@ -1,24 +1,29 @@
 import React from 'react'
-import home from "../views/home"
-import Main from '../views/main'
+import Home from "../views/home"
+import JobManager from '../views/jobManager'
 import dashbord from '../views/dashbord'
 import {Route} from 'react-router-dom'
 const routers=[
   {
     path: '/',
-    component: home,
+    component: Home,
     exact: true,
   },
   {
-    path: '/home',
-    component:Main ,
+    path: '/jobManager',
+    component: JobManager,
     exact: true,
   },
   {
     path: '/dashbord',
     component: dashbord,
     exact: true,
-  }
+  },
+  {
+    path: '/home',
+    component: Home,
+    exact: true,
+  },
   
 ]
 
