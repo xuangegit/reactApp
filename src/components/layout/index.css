@@ -26,3 +26,16 @@
   height: calc(100vh - 88px);
   overflow-x: scroll;
 }
+.MenuFlodIcon{
+  /* margin: 0 15px; */
+  font-size: 20px;
+}
+.flexWrapper{
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.loginOutBtn {
+  cursor: pointer;
+}

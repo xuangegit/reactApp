@@ -12,11 +12,11 @@ export default class menu extends Component{
               <span>职位列表</span>
               <NavLink to='/jobManager'></NavLink>
             </Menu.Item>
-            <Menu.Item key="2">
+            {/* <Menu.Item key="2">
               <UserOutlined />
               <span>dashbord</span>
               <NavLink to='/dashbord'></NavLink>
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.SubMenu
               key="sub1"
               title={

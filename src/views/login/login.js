@@ -1,6 +1,7 @@
 import React from 'react'
 import Particles from 'react-particles-js';
 import { Form, Input, Button, Checkbox } from 'antd';
+import {UserOutlined ,LockOutlined} from '@ant-design/icons';
 import './login.css'
 export default class Login extends React.Component{
   constructor(props){
@@ -8,10 +9,10 @@ export default class Login extends React.Component{
     this.state = {
       layout: {
         labelCol: {
-          span: 8,
+          span: 0,
         },
         wrapperCol: {
-          span: 16,
+          span: 24,
         },
       },
       tailLayout: {
@@ -24,6 +25,8 @@ export default class Login extends React.Component{
   }
      onFinish = (values) => {
       console.log('Success:', values);
+      console.log('this',this)
+      this.props.history.push('/')
     }
   
    onFinishFailed = (errorInfo) => {
@@ -152,6 +155,7 @@ export default class Login extends React.Component{
             <div >
               <Form
                 {...layout}
+                className="loginForm"
                 name="basic"
                 initialValues={{
                   remember: true,
@@ -160,38 +164,40 @@ export default class Login extends React.Component{
                 onFinishFailed={this.onFinishFailed.bind(this)}
               >
                 <Form.Item
-                  label="Username"
+                  // label="用户名"
+                  className="itemOnly"
                   name="username"
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your username!',
+                      message: '请输入用户名',
                     },
                   ]}
                 >
-                  <Input />
+                  <Input  autoComplete="off" className="borderOnly" bordered={false} placeholder="请输入用户名" prefix={<><UserOutlined className="iconClass"/><div className="separateLine"> |</div></>}/>
                 </Form.Item>
 
                 <Form.Item
-                  label="Password"
+                  // label="密码"
+                  className="itemOnly"
                   name="password"
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your password!',
+                      message: '请输入密码',
                     },
                   ]}
                 >
-                  <Input.Password />
+                  <Input.Password className="borderOnly" bordered={false} placeholder="请输入密码" prefix={<><LockOutlined className="iconClass"/><div className="separateLine"> |</div></>} />
                 </Form.Item>
 
                 <Form.Item {...tailLayout} name="remember" valuePropName="checked">
-                  <Checkbox>Remember me</Checkbox>
+                  <Checkbox>记住我</Checkbox>
                 </Form.Item>
 
-                <Form.Item {...tailLayout}>
-                  <Button type="primary" htmlType="submit">
-                    Submit
+                <Form.Item >
+                  <Button type="primary" htmlType="submit" block>
+                    登录
                   </Button>
                 </Form.Item>
               </Form>

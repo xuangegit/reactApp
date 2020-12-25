@@ -2,7 +2,9 @@ import React from 'react'
 import { Layout} from 'antd';
 import Menu from './menu'
 import './index.css'
-// import {Icon} from '@ant-design/icons'
+import  {MenuFoldOutlined,MenuUnfoldOutlined}  from '@ant-design/icons'
+// import Icon from '@ant-design/icons'
+const loginOutIcon =require('../../svg/loginOut.svg')
 // import WithCopyRight from  '../HOC/WithCopyRight'
 const { Header, Sider, Content } = Layout;
 
@@ -13,14 +15,17 @@ class SiderDemo extends React.Component {
       collapsed: false,
     };
   }
-  toggle = () => {
+  toggle = (status) => {
     this.setState({
-      collapsed: !this.state.collapsed,
+      collapsed: status,
     });
   };
-
+ loginOut = ()=>{
+   console.log('this',this)
+ }
   render() {
     console.log('children',this.props.children)
+    const {collapsed} = this.state
     return (
       <Layout className="layout">
         <Sider breakpoint="xl"
@@ -37,11 +42,15 @@ class SiderDemo extends React.Component {
         </Sider>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
-            {/* <Icon
-              className="trigger"
-              type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
-              onClick={this.toggle}
-            /> */}
+           <div className="flexWrapper">
+           {collapsed?<MenuFoldOutlined className="MenuFlodIcon" onClick={this.toggle.bind(this,false)}/> :
+            <MenuUnfoldOutlined className="MenuFlodIcon"
+             onClick={this.toggle.bind(this,true)}/>}
+             <a className="loginOutBtn" onClick={this.loginOut.bind(this)} href="#/login">
+               <img src={loginOutIcon} alt=""></img>
+             </a>
+           </div>
+            
           </Header>
           <Content
             className="app-content"
