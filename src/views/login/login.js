@@ -3,6 +3,10 @@ import Particles from 'react-particles-js';
 import { Form, Input, Button, Checkbox } from 'antd';
 import {UserOutlined ,LockOutlined} from '@ant-design/icons';
 import './login.css'
+// import {userLogin} from '../../services' 
+import axios from 'axios'
+import apis from '../../services/apis'
+import md5 from 'js-md5'
 export default class Login extends React.Component{
   constructor(props){
     super(props)
@@ -25,8 +29,17 @@ export default class Login extends React.Component{
   }
      onFinish = (values) => {
       console.log('Success:', values);
-      console.log('this',this)
-      this.props.history.push('/')
+      axios.post(apis.userLogin,{userName:values.username,pwd:md5(values.password)},{
+        baseURL: apis.baseUrl,
+        // data: {userName:values.username,pwd:md5(values.password)}
+      }).then(d=>{
+        console.log('登录',d)
+      })
+      // console.log('this',userLogin)
+      // userLogin({userName:values.username,pwd:md5(values.password)}).then(d=>{
+      //   console.log('登录',d)
+      // })
+      // this.props.history.push('/')
     }
   
    onFinishFailed = (errorInfo) => {
