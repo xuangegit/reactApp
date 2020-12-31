@@ -12,7 +12,7 @@ export default class RouteConfig extends Component{
         <Switch>
           <Route exact path='/login' component={Login} />
           <Route path='/' render={()=>
-            {return (localStorage.getItem('birdUserInfo')&&localStorage.getItem('birdUserInfo')!=='')?<App/>:<Login/>}
+            <App/>
           }>
           </Route>
         </Switch>

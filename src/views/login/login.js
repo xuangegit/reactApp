@@ -3,10 +3,11 @@ import Particles from 'react-particles-js';
 import { Form, Input, Button, Checkbox } from 'antd';
 import {UserOutlined ,LockOutlined} from '@ant-design/icons';
 import './login.css'
-// import {userLogin} from '../../services' 
+import {userLogin} from '../../services' 
 import axios from 'axios'
 import apis from '../../services/apis'
 import md5 from 'js-md5'
+
 export default class Login extends React.Component{
   constructor(props){
     super(props)
@@ -19,27 +20,32 @@ export default class Login extends React.Component{
           span: 24,
         },
       },
-      tailLayout: {
-        wrapperCol: {
-          offset: 8,
-          span: 16,
-        },
-      }
+      // tailLayout: {
+      //   wrapperCol: {
+      //     offset: 8,
+      //     span: 16,
+      //   },
+      // }
     }
   }
      onFinish = (values) => {
       console.log('Success:', values);
-      axios.post(apis.userLogin,{userName:values.username,pwd:md5(values.password)},{
-        baseURL: apis.baseUrl,
-        // data: {userName:values.username,pwd:md5(values.password)}
-      }).then(d=>{
-        console.log('登录',d)
-      })
-      // console.log('this',userLogin)
-      // userLogin({userName:values.username,pwd:md5(values.password)}).then(d=>{
+      let data =  {userName:values.username,pwd:md5(values.password)}
+      // axios.post(apis.userLogin,
+      //   data,
+      //   {
+      //   baseURL: apis.baseUrl,
+      // }).then(d=>{
       //   console.log('登录',d)
       // })
-      // this.props.history.push('/')
+      // console.log('this',userLogin)
+      var _this = this
+      userLogin(data).then(d=>{
+        console.log('登录',d)
+        localStorage.setItem('loginToken',d.data.token)
+        _this.props.history.push('/')
+      })
+      
     }
   
    onFinishFailed = (errorInfo) => {
@@ -204,7 +210,7 @@ export default class Login extends React.Component{
                   <Input.Password className="borderOnly" bordered={false} placeholder="请输入密码" prefix={<><LockOutlined className="iconClass"/><div className="separateLine"> |</div></>} />
                 </Form.Item>
 
-                <Form.Item {...tailLayout} name="remember" valuePropName="checked">
+                <Form.Item  name="remember" valuePropName="checked">
                   <Checkbox>记住我</Checkbox>
                 </Form.Item>
 

@@ -2,6 +2,7 @@ import { Table, Button,Popover,Input,Form,Modal,Select ,Space,Popconfirm, messag
 import React from 'react'
 import { PlusOutlined ,SearchOutlined } from '@ant-design/icons';
 import './index.css'
+import {getPositionList} from '../../services'
 // import AddUpdateDialog from './components/addUpdateDialog'
 
 const data = [];
@@ -154,8 +155,16 @@ export default class Main extends React.Component {
     };
     
   }
-  
-   editHandle = (record)=>{
+  componentWillMount() {
+    alert("componentWillMount");
+    this.getTableData()
+  }
+  getTableData = ()=> {
+    getPositionList({page:1,size:20}).then(d=>{
+      console.log('列表',d.data)
+    })
+  }
+  editHandle = (record)=>{
     console.log('this',this)
     console.log('row',record)
     this.setState({

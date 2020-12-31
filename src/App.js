@@ -8,10 +8,15 @@ import routers from './routers/routers'
 // import logo from './logo.svg';
 import './App.css';
 
-const App = () => (
+const App = (props) => {
+  // if(!localStorage.getItem('userInfo')) {
+  //   window.location.href=(window.origin + '/#/login')
+  // }
+  
+  return(
   <BaseLayout>
     <div className="content">{routers}</div>
   </BaseLayout>
-)
+)}
  
 export default App;

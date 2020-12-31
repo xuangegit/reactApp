@@ -6,7 +6,7 @@ import {Route} from 'react-router-dom'
 const routers=[
   {
     path: '/',
-    component: Home,
+    component: JobManager,
     exact: true,
   },
   {
