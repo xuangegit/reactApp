@@ -12,7 +12,7 @@ service.interceptors.request.use(function (config) {
   if(config.url.indexOf('login')<=-1){ //非登录接口
     console.log('loginToken',window.localStorage.loginToken)
     if(localStorage.getItem('loginToken')) { //已经登录
-      config['Authorization'] = localStorage.getItem('loginToken')
+      config.headers.token = localStorage.getItem('loginToken')
     } else { //未登录
       window.location.href = window.origin + '/#/login'
     }
@@ -27,7 +27,7 @@ service.interceptors.request.use(function (config) {
 service.interceptors.response.use(function (response) {
   // 对响应数据做点什么
   // console.log('res',response)
-  if(response.data.code==1){
+  if(response.data.code===1){
     return Promise.resolve(response.data)
   }else {
     return Promise.reject(response.data)
@@ -48,4 +48,7 @@ export const userLogin = (data)=>{
 }
 export const getPositionList = (data)=>{
   return service.get(apis.positionList,{params:data})
+}
+export const positionInsert = (data) =>{
+  return service.post(apis.positionInsert,data)
 }

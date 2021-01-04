@@ -4,8 +4,8 @@ import { Form, Input, Button, Checkbox } from 'antd';
 import {UserOutlined ,LockOutlined} from '@ant-design/icons';
 import './login.css'
 import {userLogin} from '../../services' 
-import axios from 'axios'
-import apis from '../../services/apis'
+// import axios from 'axios'
+// import apis from '../../services/apis'
 import md5 from 'js-md5'
 
 export default class Login extends React.Component{
@@ -52,7 +52,7 @@ export default class Login extends React.Component{
       console.log('Failed:', errorInfo)
     }
   render(){
-    const {tailLayout,layout} = this.state
+    const {layout} = this.state
     return(
       <div style={{width:"100%",height: '100vh'}}>
         <Particles 

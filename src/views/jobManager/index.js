@@ -2,25 +2,25 @@ import { Table, Button,Popover,Input,Form,Modal,Select ,Space,Popconfirm, messag
 import React from 'react'
 import { PlusOutlined ,SearchOutlined } from '@ant-design/icons';
 import './index.css'
-import {getPositionList} from '../../services'
+import {getPositionList,positionInsert} from '../../services'
 // import AddUpdateDialog from './components/addUpdateDialog'
 
 const data = [];
-for (let i = 0; i < 46; i++) {
+for(let i = 0; i < 46; i++) {
   data.push({
     key: i,
     index: i+1,
-    jobName: `Edward King ${i}`,
-    jobType: 32,
-    salary: '7-15K',
-    workplace: '上海',
-    education: '本科及以上',
-    responsibility: `1、 负责法律文件的审核、起草工作；
+    name: `Edward King ${i}`,
+    type: 32,
+    salaryRange: '7-15K',
+    workPlace: '上海',
+    educationRequirements: '本科及以上',
+    responsibilities: `1、 负责法律文件的审核、起草工作；
     2、 负责相关协议、合同等的核对、用印、归档及管理工作；
     3、 协助处理公司各类法律事务、法律风险规避等工作；
     4、 协助配合初步的法律研究；
     5、 完成领导安排的其他工作任务。`,
-    address: `fdsdasf fafgsgfsgsgs
+    jobRequirements: `fdsdasf fafgsgfsgsgs
     gsfgsfg
     gsfgsg
     gsfgsdfgsdfgsgjesrjfldsfjls
@@ -42,10 +42,10 @@ export default class Main extends React.Component {
         wrapperCol: { span: 18 },
       },
       selectedRowKeys: [], // Check here to configure the default column
-      loading: false,
       visible: false,
       confirmLoading:false,
       title: '添加岗位',
+      tableData: data,
       pagination: {
         pageSizeOptions: [10,20,50,100],
         // total:data.length,
@@ -66,27 +66,27 @@ export default class Main extends React.Component {
         },
         {
           title: '岗位名称',
-          dataIndex: 'jobName',
+          dataIndex: 'name',
           width: 160
         },
         {
           title: '岗位类型',
-          dataIndex: 'jobType',
+          dataIndex: 'type',
           width: 100,
         },
         {
           title: '工作地点',
-          dataIndex: 'workplace',
+          dataIndex: 'workPlace',
           width:100
         },
         {
           title: '学历要求',
-          dataIndex: 'education ',
+          dataIndex: 'educationRequirements',
           width:100
         },
         {
           title: '薪资',
-          dataIndex: 'salary',
+          dataIndex: 'salaryRange',
           width: 100,
         },
         {
@@ -96,18 +96,18 @@ export default class Main extends React.Component {
         },
         {
           title: '岗位职责',
-          dataIndex: 'responsibility',
+          dataIndex: 'responsibilities',
           width: 200,
-          render:(responsibility)=> (<Popover content={<p style={{width:'500px'}}>{responsibility}</p>} title="岗位职责" trigger="hover" >
-              <div  className="newline-hidden">{responsibility}</div>
+          render:(responsibilities)=> (<Popover content={<p style={{width:'500px'}}>{responsibilities}</p>} title="岗位职责" trigger="hover" >
+              <div  className="newline-hidden">{responsibilities}</div>
           </Popover>)
         },
         {
           title: '岗位要求',
-          dataIndex: 'address',
+          dataIndex: 'jobRequirements',
           width:200,
-          render:(address)=> (<Popover content={<p style={{width:'500px'}}>{address}</p>} title="address" trigger="hover" >
-              <div  className="newline-hidden">{address}</div>
+          render:(jobRequirements)=> (<Popover content={<p style={{width:'500px'}}>{jobRequirements}</p>} title="岗位要求" trigger="hover" >
+              <div  className="newline-hidden">{jobRequirements}</div>
           </Popover>)
         },
         {
@@ -134,7 +134,7 @@ export default class Main extends React.Component {
                     okText="确认"
                     cancelText="取消"
                   >
-                    {record.status&&<Button size="small" type="primary" danger>撤销发布</Button>}
+                    {record.status?<Button size="small" type="primary" danger>撤销发布</Button>:''}
                   </Popconfirm>
                   <Popconfirm
                     placement="topLeft"
@@ -156,12 +156,19 @@ export default class Main extends React.Component {
     
   }
   componentWillMount() {
-    alert("componentWillMount");
+    // alert("componentWillMount");
     this.getTableData()
   }
   getTableData = ()=> {
     getPositionList({page:1,size:20}).then(d=>{
       console.log('列表',d.data)
+      const dataArray = []
+       d.data.forEach((item,i) =>{
+        item.index = i+1
+        item.key = i
+        dataArray.push(item)
+      })
+      this.setState({tableData:dataArray})
     })
   }
   editHandle = (record)=>{
@@ -191,12 +198,12 @@ export default class Main extends React.Component {
     // })
   }
   start = () => {
-    this.setState({ loading: true });
+    // this.setState({ loading: true });
     // ajax request after empty completing
     setTimeout(() => {
       this.setState({
         selectedRowKeys: [],
-        loading: false,
+        // loading: false,
       });
     }, 1000);
   };
@@ -227,10 +234,20 @@ export default class Main extends React.Component {
   };
   handleOk = () => {
     this.setState({confirmLoading:true})
-    setTimeout(() => {
-      this.setState({visible:false})
+    console.log('this.formRef.current',this.formRef.current)
+    this.formRef.current.validateFields().then(values=>{
+      console.log('校验通过',values)
+      return  positionInsert(values)  
+    }).then(d=>{
+      this.setState({visible:false,confirmLoading:false})
+      this.getTableData() //刷新列表
+    }).catch(e=>{
       this.setState({confirmLoading:false})
-    }, 2000);
+    })
+    // setTimeout(() => {
+    //   this.setState({visible:false})
+    //   this.setState({confirmLoading:false})
+    // }, 2000);
   };
 
   handleCancel = () => {
@@ -240,29 +257,40 @@ export default class Main extends React.Component {
 
 
   render() {
-    const { loading, selectedRowKeys ,columns,confirmLoading,layout,visible,title,pagination} = this.state;
+    const {  tableData, selectedRowKeys ,columns,confirmLoading,layout,visible,title,pagination} = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
-    const hasSelected = selectedRowKeys.length > 0;
+    // const hasSelected = selectedRowKeys.length > 0;
     return (
       <>
         <div className="topWrapper">
-            <div>
-              <Button type="primary" onClick={this.start} disabled={!hasSelected} loading={loading}>
-                Reload
-              </Button>
+            <div >
+              {/*
               <Select defaultValue={1} style={{ width: 160,marginRight:20 }}>
                 <Select.Option value={1}>已发布</Select.Option>
                 <Select.Option value={0}>未发布</Select.Option>
               </Select>
-              <Button type="primary">
+              <Button type="primary" onClick={this.getTableData.bind(this)}>
                <span>搜索<SearchOutlined /></span>
               </Button>
               <span style={{ marginLeft: 8 }}>
                 {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-              </span>
+              </span> */}
+              <Form layout="inline">
+                <Form.Item>
+                  <Select defaultValue={1} style={{ width: 160,marginRight:20 }}>
+                    <Select.Option value={1}>已发布</Select.Option>
+                    <Select.Option value={0}>未发布</Select.Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item>
+                  <Button type="primary"  htmlType="submit" onClick={this.getTableData.bind(this)}>
+                    <span>搜索<SearchOutlined /></span>
+                  </Button>
+                </Form.Item>
+              </Form>
             </div>  
             <div>
               <Button type="primary" className="common-button">部分发布</Button>
@@ -270,14 +298,14 @@ export default class Main extends React.Component {
               <Button type="primary"  className="common-button" onClick={this.addHandle}>< PlusOutlined />添加</Button>
             </div>
         </div>
-        <Table rowSelection={rowSelection} columns={columns} pagination={pagination} dataSource={data} scroll={{ x: 1200 }}/>
+        <Table rowSelection={rowSelection} columns={columns} pagination={pagination} dataSource={tableData} scroll={{ x: 1200 }}/>
         <Modal
           destroyOnClose
           centered
           maskClosable={false}
           title={title}
           visible={visible}
-          onOk={this.handleOk}
+          onOk={this.handleOk.bind(this)}
           okText="确认"
           cancelText="取消"
           confirmLoading={confirmLoading}
@@ -293,7 +321,7 @@ export default class Main extends React.Component {
           >
             <Form.Item
               label="岗位名称"
-              name="jobName"
+              name="name"
               rules={[{ required: true, message: '请输入岗位名称' }]}
             >
               <Input allowClear/>
@@ -301,7 +329,7 @@ export default class Main extends React.Component {
 
             <Form.Item
               label="岗位类型"
-              name="jobType"
+              name="type"
               rules={[{ required: true, message: '请选择岗位类型' }]}
             >
               <Select allowClear>
@@ -311,7 +339,7 @@ export default class Main extends React.Component {
             </Form.Item>
             <Form.Item
               label="工作地点"
-              name="workplace"
+              name="workPlace"
               rules={[{ required: true, message: '请选择工作地点' }]}
             >
               <Select allowClear>
@@ -323,25 +351,25 @@ export default class Main extends React.Component {
             <Form.Item
               label="工作经验"
               name="workExperience"
-              rules={[{ required: true, message: '请选择工作经验' }]}
+              // rules={[{ required: true, message: '请选择工作经验' }]}
             >
               <Select allowClear>
-                <Select.Option value="1">1年工作经验</Select.Option>
-                <Select.Option value="2">2年工作经验</Select.Option>
-                <Select.Option value="3">3年工作经验</Select.Option>
-                <Select.Option value="4">4年工作经验</Select.Option>
-                <Select.Option value="5">5年工作经验</Select.Option>
-                <Select.Option value="6">6年工作经验</Select.Option>
-                <Select.Option value="7">7年工作经验</Select.Option>
-                <Select.Option value="8">8年工作经验</Select.Option>
-                <Select.Option value="9">9年工作经验</Select.Option>
-                <Select.Option value="10">10年工作经验</Select.Option>
+                <Select.Option value="1年工作经验">1年工作经验</Select.Option>
+                <Select.Option value="2年工作经验">2年工作经验</Select.Option>
+                <Select.Option value="3年工作经验">3年工作经验</Select.Option>
+                <Select.Option value="4年工作经验">4年工作经验</Select.Option>
+                <Select.Option value="5年工作经验">5年工作经验</Select.Option>
+                <Select.Option value="6年工作经验">6年工作经验</Select.Option>
+                <Select.Option value="7年工作经验">7年工作经验</Select.Option>
+                <Select.Option value="8年工作经验">8年工作经验</Select.Option>
+                <Select.Option value="9年工作经验">9年工作经验</Select.Option>
+                <Select.Option value="10年工作经验">10年工作经验</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item
               label="学历要求"
-              name="education"
-              rules={[{ required: true, message: '请选择学历要求' }]}
+              name="educationRequirements"
+              // rules={[{ required: true, message: '请选择学历要求' }]}
             >
               <Select allowClear>
                 <Select.Option value="博士">博士</Select.Option>
@@ -353,14 +381,14 @@ export default class Main extends React.Component {
             </Form.Item>
             <Form.Item
               label="薪资范围"
-              name="salary"
-              rules={[{ required: true, message: '请输入薪资范围' }]}
+              name="salaryRange"
+              // rules={[{ required: true, message: '请输入薪资范围' }]}
             >
               <Input allowClear/>
             </Form.Item>
             <Form.Item
               label="岗位职责"
-              name="responsibility"
+              name="responsibilities"
               rules={[{ required: true, message: '请输入岗位职责' }]}
             >
               <Input.TextArea allowClear autoSize={{minRows:3}} />
@@ -368,7 +396,7 @@ export default class Main extends React.Component {
             </Form.Item>
             <Form.Item
               label="岗位要求"
-              name="address"
+              name="jobRequirements"
               rules={[{ required: true, message: '请输入岗位要求' }]}
             >
               <Input.TextArea autoSize={{minRows:3}} allowClear/>

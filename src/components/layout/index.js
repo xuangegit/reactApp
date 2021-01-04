@@ -23,7 +23,8 @@ class SiderDemo extends React.Component {
  loginOut = ()=>{
    console.log('this',this)
    localStorage.removeItem('loginToken')
-    window.location.href = window.orgin+'/#/login'
+   console.log('window.origin',origin)
+    window.location.href = window.origin+'/#/login'
  }
   render() {
     console.log('children',this.props.children)
@@ -48,9 +49,9 @@ class SiderDemo extends React.Component {
            {collapsed?<MenuFoldOutlined className="MenuFlodIcon" onClick={this.toggle.bind(this,false)}/> :
             <MenuUnfoldOutlined className="MenuFlodIcon"
              onClick={this.toggle.bind(this,true)}/>}
-             <a className="loginOutBtn" onClick={this.loginOut.bind(this)}>
+             <span className="loginOutBtn" onClick={this.loginOut.bind(this)}>
                <img src={loginOutIcon} alt=""></img>
-             </a>
+             </span>
            </div>
             
           </Header>
