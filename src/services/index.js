@@ -46,9 +46,22 @@ export const getToList = ()=>{
 export const userLogin = (data)=>{
    return service.post(apis.userLogin,data)
 }
+//岗位相关
 export const getPositionList = (data)=>{
   return service.get(apis.positionList,{params:data})
 }
 export const positionInsert = (data) =>{
   return service.post(apis.positionInsert,data)
+}
+export const positionUpdate = (data) =>{
+  return service.post(apis.positionUpdate,data)
+}
+export const positionDeleteById = (id)=> {
+
+}
+export const positionPublish = ()=>{
+
+}
+export const positionPublishAll = ()=>{
+
 }

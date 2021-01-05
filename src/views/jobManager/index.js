@@ -2,7 +2,7 @@ import { Table, Button,Popover,Input,Form,Modal,Select ,Space,Popconfirm, messag
 import React from 'react'
 import { PlusOutlined ,SearchOutlined } from '@ant-design/icons';
 import './index.css'
-import {getPositionList,positionInsert} from '../../services'
+import {getPositionList,positionInsert,positionUpdate} from '../../services'
 // import AddUpdateDialog from './components/addUpdateDialog'
 
 const data = [];
@@ -37,6 +37,7 @@ export default class Main extends React.Component {
     super(props);
     this.formRef = React.createRef();
     this.state = {
+      selectValue: 1,
       layout:{
         labelCol: { span: 6 },
         wrapperCol: { span: 18 },
@@ -47,27 +48,50 @@ export default class Main extends React.Component {
       title: '添加岗位',
       tableData: data,
       pagination: {
+        current: 1,
+        pageSize: 10,
         pageSizeOptions: [10,20,50,100],
         // total:data.length,
-        // showSizeChanger: true
+        // showSizeChanger: true,
+        responsive: true,
         showTotal:(total)=>`共${total}条`,
         onChange:(page, pageSize)=>{
           console.log(page,pageSize)
+          this.setState(prevState => ({ 
+              // tableData:dataArray,
+              pagination: { 
+                ...prevState.pagination, 
+                current: page
+              } 
+          }),()=>{
+            this.getTableData()
+          }) 
+          
         },
+        total: 0,
         onShowSizeChange:(current,pageSize)=>{
-
+          console.log(current,pageSize)
+          this.setState(prevState => ({ 
+              pagination: { 
+                ...prevState.pagination, 
+                pageSize:  pageSize,
+                current:current
+              } 
+          })) 
         }
       },
       columns: [
         {
           title: '序号',
           dataIndex: 'index',
-          width: 64
+          width: 64,
+          fixed: 'left',
         },
         {
           title: '岗位名称',
           dataIndex: 'name',
-          width: 160
+          width: 160,
+         
         },
         {
           title: '岗位类型',
@@ -159,8 +183,19 @@ export default class Main extends React.Component {
     // alert("componentWillMount");
     this.getTableData()
   }
+  handleChange = (value)=>{
+    this.setState({
+      selectValue:value
+    })
+  }
+  searchFn = () =>{
+    // this.setState()
+    this.getTableData()
+  }
   getTableData = ()=> {
-    getPositionList({page:1,size:20}).then(d=>{
+    let {pagination,selectValue} = this.state
+    let serchParams= {page:pagination.current,size:pagination.pageSize,status:selectValue}
+    getPositionList(serchParams).then(d=>{
       console.log('列表',d.data)
       const dataArray = []
        d.data.forEach((item,i) =>{
@@ -168,7 +203,13 @@ export default class Main extends React.Component {
         item.key = i
         dataArray.push(item)
       })
-      this.setState({tableData:dataArray})
+      this.setState(prevState => ({ 
+          tableData:dataArray,
+          pagination: { 
+          ...prevState.pagination, 
+          total: d.total
+          } 
+      })) 
     })
   }
   editHandle = (record)=>{
@@ -176,7 +217,8 @@ export default class Main extends React.Component {
     console.log('row',record)
     this.setState({
       title: '编辑岗位',
-      visible : true
+      visible : true,
+      currentId: record.id
     },()=>{
       
       console.log('this',this)
@@ -187,15 +229,6 @@ export default class Main extends React.Component {
      
     })
     
-    // const promise1 = new Promise((resolve, reject)=> 
-    //   this.setState({title: '编辑岗位',visible : true}, resolve)
-    // )
-    // promise1.then(()=>{
-    //   console.log('this',this)
-    //   setTimeout(()=>{
-    //     this.formRef.current.setFieldsValue(record)
-    //   },100)
-    // })
   }
   start = () => {
     // this.setState({ loading: true });
@@ -208,6 +241,9 @@ export default class Main extends React.Component {
     }, 1000);
   };
   confirmDelete = (record)=>{
+    this.setState({currentId:record.id},()=>{
+      console.log('id',this.state.currentId)
+    })
     message.success('已经删除');
     console.log('行数据--row',record)
   }
@@ -233,21 +269,27 @@ export default class Main extends React.Component {
     this.setState({visible:true})
   };
   handleOk = () => {
-    this.setState({confirmLoading:true})
+    console.log('currentId',this.state.currentId)
+    // this.setState({confirmLoading:true})
     console.log('this.formRef.current',this.formRef.current)
     this.formRef.current.validateFields().then(values=>{
+      let params = {...values}
+      params.id = this.state.currentId
       console.log('校验通过',values)
-      return  positionInsert(values)  
-    }).then(d=>{
-      this.setState({visible:false,confirmLoading:false})
+      console.log('校验通过--params',params)
+      if(this.state.title ==='添加岗位')
+        return  positionInsert(params)
+      else  
+        return  positionUpdate(params)    
+    })
+    .then(d=>{
+        //添加编辑接口通过相关逻辑
+      this.setState({visible:false,confirmLoading:false}) 
       this.getTableData() //刷新列表
     }).catch(e=>{
       this.setState({confirmLoading:false})
     })
-    // setTimeout(() => {
-    //   this.setState({visible:false})
-    //   this.setState({confirmLoading:false})
-    // }, 2000);
+    
   };
 
   handleCancel = () => {
@@ -280,13 +322,16 @@ export default class Main extends React.Component {
               </span> */}
               <Form layout="inline">
                 <Form.Item>
-                  <Select defaultValue={1} style={{ width: 160,marginRight:20 }}>
-                    <Select.Option value={1}>已发布</Select.Option>
-                    <Select.Option value={0}>未发布</Select.Option>
+                  <Select  value={this.state.selectValue} 
+                    onChange={this.handleChange.bind(this)} 
+                    style={{ width: 160,marginRight:20 }}>
+                    <Select.Option value={1} >全部</Select.Option>
+                    <Select.Option value={2}>已发布</Select.Option>
+                    <Select.Option value={3}>未发布</Select.Option>
                   </Select>
                 </Form.Item>
                 <Form.Item>
-                  <Button type="primary"  htmlType="submit" onClick={this.getTableData.bind(this)}>
+                  <Button type="primary"  htmlType="submit" onClick={this.searchFn.bind(this)}>
                     <span>搜索<SearchOutlined /></span>
                   </Button>
                 </Form.Item>
