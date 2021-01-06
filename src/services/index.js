@@ -27,6 +27,11 @@ service.interceptors.request.use(function (config) {
 service.interceptors.response.use(function (response) {
   // 对响应数据做点什么
   // console.log('res',response)
+  if (response.headers.token) {
+    // 如果 header 中存在 token，那么触发 refreshToken 方法，替换本地的 token
+    localStorage.setItem('loginToken',response.headers.token)
+    // service.defaults.headers['token'] = response.headers.token
+  }
   if(response.data.code===1){
     return Promise.resolve(response.data)
   }else {
