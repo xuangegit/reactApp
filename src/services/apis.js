@@ -1,5 +1,5 @@
 console.log('NODE_ENV',process.env.NODE_ENV)
-const baseURL = process.env.NODE_ENV==="development"? "/api" : "http://192.168.33.241:10000/api"
+const baseURL = process.env.NODE_ENV==="development"? "/api" : "http://192.168.33.241:10000"
 export default{
   // baseUrl: 'http://192.168.33.241:10000/api',
   // baseUrl: '/api',
