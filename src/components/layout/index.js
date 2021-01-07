@@ -62,6 +62,7 @@ class SiderDemo extends React.Component {
               padding: 24,
               background: '#fff',
               minHeight: 380,
+              minWidth: 700
             }}
           >
             {this.props.children}
