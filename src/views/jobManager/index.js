@@ -2,7 +2,7 @@ import { Table, Button,Popover,Input,Form,Modal,Select ,Space,Popconfirm, messag
 import React from 'react'
 import { PlusOutlined ,SearchOutlined } from '@ant-design/icons';
 import './index.css'
-gaimport {getPositionList,positionInsert,positionUpdate,positionDeleteById,positionPublish,positionRevocation} from '../../services'
+import {getPositionList,positionInsert,positionUpdate,positionDeleteById,positionPublish,positionRevocation} from '../../services'
 const data = [];
 export default class Main extends React.Component {
   
