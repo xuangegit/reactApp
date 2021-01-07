@@ -2,47 +2,21 @@ import { Table, Button,Popover,Input,Form,Modal,Select ,Space,Popconfirm, messag
 import React from 'react'
 import { PlusOutlined ,SearchOutlined } from '@ant-design/icons';
 import './index.css'
-import {getPositionList,positionInsert,positionUpdate} from '../../services'
-// import AddUpdateDialog from './components/addUpdateDialog'
-
+gaimport {getPositionList,positionInsert,positionUpdate,positionDeleteById,positionPublish,positionRevocation} from '../../services'
 const data = [];
-for(let i = 0; i < 46; i++) {
-  data.push({
-    key: i,
-    index: i+1,
-    name: `Edward King ${i}`,
-    type: 32,
-    salaryRange: '7-15K',
-    workPlace: '上海',
-    educationRequirements: '本科及以上',
-    responsibilities: `1、 负责法律文件的审核、起草工作；
-    2、 负责相关协议、合同等的核对、用印、归档及管理工作；
-    3、 协助处理公司各类法律事务、法律风险规避等工作；
-    4、 协助配合初步的法律研究；
-    5、 完成领导安排的其他工作任务。`,
-    jobRequirements: `fdsdasf fafgsgfsgsgs
-    gsfgsfg
-    gsfgsg
-    gsfgsdfgsdfgsgjesrjfldsfjls
-    gsfgsgsdfgsdfgjpoewirafladfladjfadsjfl
-    faffadfasdfasjkflnnadfadafasf
-     f sfa af afa fasdf sf asfasfasfda sfLondon, Park Lane no. ${i}` ,
-     status:(i%2)===0
-  });
-}
-
 export default class Main extends React.Component {
   
   constructor(props) {
     super(props);
     this.formRef = React.createRef();
     this.state = {
-      selectValue: 1,
+      selectValue: 2,
       layout:{
         labelCol: { span: 6 },
         wrapperCol: { span: 18 },
       },
       selectedRowKeys: [], // Check here to configure the default column
+      selectedRowIds: [],
       visible: false,
       confirmLoading:false,
       title: '添加岗位',
@@ -51,14 +25,14 @@ export default class Main extends React.Component {
         current: 1,
         pageSize: 10,
         pageSizeOptions: [10,20,50,100],
-        // total:data.length,
         // showSizeChanger: true,
         responsive: true,
         showTotal:(total)=>`共${total}条`,
         onChange:(page, pageSize)=>{
           console.log(page,pageSize)
           this.setState(prevState => ({ 
-              // tableData:dataArray,
+            selectedRowKeys: [],
+            selectedRowIds: [],
               pagination: { 
                 ...prevState.pagination, 
                 current: page
@@ -72,6 +46,8 @@ export default class Main extends React.Component {
         onShowSizeChange:(current,pageSize)=>{
           console.log(current,pageSize)
           this.setState(prevState => ({ 
+              selectedRowKeys: [],
+              selectedRowIds: [],
               pagination: { 
                 ...prevState.pagination, 
                 pageSize:  pageSize,
@@ -152,23 +128,23 @@ export default class Main extends React.Component {
                   <Button size="small" onClick={this.editHandle.bind(this,record)}>编辑</Button>
                   <Popconfirm
                     placement="topLeft"
-                    title="确认撤销本条岗位发布?"
+                    title="确认删除本条岗位?"
                     onConfirm={this.confirmDelete.bind(this,record)}
-                    onCancel={this.cancelDelete.bind(this,record)}
+                    onCancel={this.cancelDelete.bind(this)}
                     okText="确认"
                     cancelText="取消"
                   >
-                    {record.status?<Button size="small" type="primary" danger>撤销发布</Button>:''}
+                   <Button size="small" type="primary" danger>删除</Button>
                   </Popconfirm>
                   <Popconfirm
                     placement="topLeft"
-                    title="确认删除本条岗位?"
-                    onConfirm={this.confirmDelete.bind(this,record)}
-                    onCancel={this.cancelDelete.bind(this,record)}
+                    title="确认撤销本条岗位的发布?"
+                    onConfirm={this.revocation.bind(this,record)}
+                    onCancel={this.cancelRevocation.bind(this)}
                     okText="确认"
                     cancelText="取消"
                   >
-                    <Button size="small" type="primary" danger>删除</Button>
+                     {record.status?<Button size="small" type="primary" danger>撤销</Button>:''}
                   </Popconfirm>
                 </Space>
           }
@@ -230,33 +206,58 @@ export default class Main extends React.Component {
     })
     
   }
-  start = () => {
-    // this.setState({ loading: true });
-    // ajax request after empty completing
-    setTimeout(() => {
-      this.setState({
+  revocation = (record)=>{
+    positionRevocation(record.id).then(d=>{
+      this.setState(prevState => ({     
         selectedRowKeys: [],
-        // loading: false,
-      });
-    }, 1000);
-  };
-  confirmDelete = (record)=>{
-    this.setState({currentId:record.id},()=>{
-      console.log('id',this.state.currentId)
+        selectedRowIds: [],  
+        pagination: { 
+          ...prevState.pagination, 
+          current: 1
+        } 
+        }),
+        ()=>{
+          this.getTableData()
+      }) 
+      message.success('撤销成功')
+    }).catch(e=>{
+      message.error(e.message)
     })
-    message.success('已经删除');
-    console.log('行数据--row',record)
   }
-  cancelDelete = (record)=>{
-    console.log('行数据--row',record)
+
+  cancelRevocation = ()=>{
+    message.success('已取消撤销操作')
+  }
+  confirmDelete = (record)=>{
+    positionDeleteById(record.id).then(d=>{
+      console.log('删除岗位',d)
+      this.setState(prevState => ({       
+        pagination: { 
+          ...prevState.pagination, 
+          current: 1
+        } 
+        }),
+        ()=>{
+          this.getTableData()
+      }) 
+      message.success('删除成功')
+    }).catch((error)=>{
+      message.error(error.message)
+    })
+    
+  }
+  cancelDelete = ()=>{
     message.success('已取消删除');
   }
-  onSelectChange = selectedRowKeys => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
-  };
+  onSelectChange = (selectedRowKeys, selectedRows) => {
+    this.setState({
+      selectedRowKeys:selectedRowKeys,
+      selectedRowIds:selectedRows.map(e=>e.id)
+    })
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows.map(e=>e.id) );
+  }
+  
   addHandle = ()=>{
-    // alert(1)
     this.setState({
       visible:true,
       title: '添加岗位'
@@ -267,7 +268,28 @@ export default class Main extends React.Component {
   }
   showModal = () => {
     this.setState({visible:true})
-  };
+  }
+  publish = ()=>{
+    console.log('selectIds',this.state.selectedRowIds)
+    if(this.state.selectedRowIds.length===0)
+      return message.warning('请选择要发布的岗位')
+      positionPublish(this.state.selectedRowIds.join()).then(d=>{
+        message.success('发布成功')
+        this.setState(prevState => ({  
+          selectedRowKeys: [],
+          selectedRowIds: [],
+          pagination: { 
+              ...prevState.pagination, 
+              current: 1
+          } 
+          }),
+          ()=>{
+              this.getTableData()
+        }) 
+      }).catch(e=>{
+        message.error(e.message)
+      })  
+  }
   handleOk = () => {
     console.log('currentId',this.state.currentId)
     // this.setState({confirmLoading:true})
@@ -308,26 +330,15 @@ export default class Main extends React.Component {
     return (
       <>
         <div className="topWrapper">
-            <div >
-              {/*
-              <Select defaultValue={1} style={{ width: 160,marginRight:20 }}>
-                <Select.Option value={1}>已发布</Select.Option>
-                <Select.Option value={0}>未发布</Select.Option>
-              </Select>
-              <Button type="primary" onClick={this.getTableData.bind(this)}>
-               <span>搜索<SearchOutlined /></span>
-              </Button>
-              <span style={{ marginLeft: 8 }}>
-                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-              </span> */}
+            <div>
               <Form layout="inline">
                 <Form.Item>
                   <Select  value={this.state.selectValue} 
                     onChange={this.handleChange.bind(this)} 
                     style={{ width: 160,marginRight:20 }}>
-                    <Select.Option value={1} >全部</Select.Option>
-                    <Select.Option value={2}>已发布</Select.Option>
-                    <Select.Option value={3}>未发布</Select.Option>
+                    <Select.Option value={2} >全部</Select.Option>
+                    <Select.Option value={1}>已发布</Select.Option>
+                    <Select.Option value={0}>未发布</Select.Option>
                   </Select>
                 </Form.Item>
                 <Form.Item>
@@ -338,7 +349,7 @@ export default class Main extends React.Component {
               </Form>
             </div>  
             <div>
-              <Button type="primary" className="common-button">部分发布</Button>
+              <Button type="primary" className="common-button" onClick={this.publish.bind(this)}>选择发布</Button>
               <Button type="primary" className="common-button">一键发布</Button>
               <Button type="primary"  className="common-button" onClick={this.addHandle}>< PlusOutlined />添加</Button>
             </div>
@@ -449,7 +460,6 @@ export default class Main extends React.Component {
             </Form.Item>
           </Form>
         </Modal>
-        {/* <AddUpdateDialog visible={this.state.visible}></AddUpdateDialog> */}
       </>
     );
   }
