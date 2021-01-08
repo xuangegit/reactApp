@@ -38,7 +38,7 @@ service.interceptors.response.use(function (response) {
     // console.log('response.data',response.data)
     if(code===10001||code===10002||code===10003||code===10000){
       message.warning(response.data.message+',请重新登录',1.5).then(()=>{
-        window.location.href = window.origin + '/#/login'
+        window.location.href =  window.location.href.split('/#')[0] + '/#/login'
       })
     }
     return Promise.reject(response.data)

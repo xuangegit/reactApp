@@ -17,7 +17,7 @@ export default class menu extends Component{
               <span>dashbord</span>
               <NavLink to='/dashbord'></NavLink>
             </Menu.Item> */}
-            <Menu.SubMenu
+            {/* <Menu.SubMenu
               key="sub1"
               title={
                 <span>
@@ -34,7 +34,7 @@ export default class menu extends Component{
                 <span>sub1</span>
                 <NavLink to="/home"></NavLink>
               </Menu.Item>
-            </Menu.SubMenu>   
+            </Menu.SubMenu>    */}
       </Menu>
     )
   }
