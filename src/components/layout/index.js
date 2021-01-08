@@ -24,7 +24,7 @@ class SiderDemo extends React.Component {
    console.log('this',this)
    localStorage.removeItem('loginToken')
    console.log('window.origin',origin)
-    window.location.href = window.location.href.split('/#')+'/#/login'
+    window.location.href = window.location.href.split('/#')[0]+'/#/login'
  }
   render() {
     console.log('children',this.props.children)

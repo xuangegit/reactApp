@@ -269,6 +269,12 @@ export default class Main extends React.Component {
   showModal = () => {
     this.setState({visible:true})
   }
+  publishAll = ()=>{
+    positionPublish().then(d=>{
+      message.success('一键发布成功')
+      this.getTableData()
+    })
+  }
   publish = ()=>{
     console.log('selectIds',this.state.selectedRowIds)
     if(this.state.selectedRowIds.length===0)
@@ -350,7 +356,7 @@ export default class Main extends React.Component {
             </div>  
             <div>
               <Button type="primary" className="common-button" onClick={this.publish.bind(this)}>选择发布</Button>
-              <Button type="primary" className="common-button">一键发布</Button>
+              <Button type="primary" className="common-button" onClick={this.publishAll.bind(this)}>一键发布</Button>
               <Button type="primary"  className="common-button" onClick={this.addHandle}>< PlusOutlined />添加</Button>
             </div>
         </div>
